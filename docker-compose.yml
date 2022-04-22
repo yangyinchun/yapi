@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+  yapi:
+    image: yapi:latest
+    container_name: yapi
+    restart: always
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npm run install-server
+        npm run start
+    ports:
+      - 3000:3000
+      - 4000:4000
+    volumes:
+      - ./.data/log/yapi.log:/home/vendors/log
+    depends_on:
+      - mongo
+    networks:
+      - back-net
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./.data/mongodb:/data/db
+    networks:
+      - back-net
+networks:
+  back-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        -
+          subnet: 192.168.96.0/20
+          gateway: 192.168.96.1
